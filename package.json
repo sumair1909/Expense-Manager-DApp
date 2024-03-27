@@ -1,0 +1,8 @@
+{
+  "name": "expense_manager",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "dependencies": {
+    "truffle": "^5.1.67"
+  }
+}
