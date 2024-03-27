@@ -1,4 +1,5 @@
 import 'package:expense_manager/dashboard/ui/widgets/account_details_card.dart';
+import 'package:expense_manager/dashboard/ui/widgets/outlined_button.dart';
 import 'package:expense_manager/dashboard/ui/widgets/transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,8 +26,23 @@ class DashboardScreen extends StatelessWidget {
         body: ListView(
           children: [
             const AccountDetailsCard(balance: "50", userName: "SUMAIR BAIS"),
+            SizedBox(height: 10.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomOutlinedButton(
+                  buttonText: "Debit",
+                  onTap: () {},
+                ),
+                SizedBox(width: 30.w),
+                CustomOutlinedButton(
+                  buttonText: "Credit",
+                  onTap: () {},
+                )
+              ],
+            ),
             Padding(
-              padding: EdgeInsets.only(left: 20.w, bottom: 10.h),
+              padding: EdgeInsets.only(left: 20.w, bottom: 10.h, top: 10.h),
               child: Text(
                 'Transactions',
                 style: GoogleFonts.spaceGrotesk(
