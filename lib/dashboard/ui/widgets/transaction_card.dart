@@ -3,57 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(
-            "BitBank",
-            style: GoogleFonts.roboto(
-              textStyle: TextStyle(
-                fontSize: 23.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-        body: ListView(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 20.w, bottom: 10.h),
-              child: Text(
-                'Transactions',
-                style: GoogleFonts.spaceGrotesk(
-                  textStyle: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemCount: 5,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                separatorBuilder: (context, index) => SizedBox(height: 10.h),
-                itemBuilder: (context, index) => const TransactionCard(
-                  reason: "Salary",
-                  amount: "50 ETH",
-                  date: "12/12/2021",
-                ),
-              ),
-            )
-          ],
-        ));
-  }
-}
-
 class TransactionCard extends StatelessWidget {
   final String reason;
   final String amount;

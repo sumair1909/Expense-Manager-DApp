@@ -1,4 +1,4 @@
-import 'package:expense_manager/dashboard/ui/dashboard_screen.dart';
+import 'package:expense_manager/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
