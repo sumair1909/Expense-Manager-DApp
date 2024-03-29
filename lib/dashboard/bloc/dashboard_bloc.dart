@@ -77,12 +77,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             amount: allTransactionsData[1][i].toString(),
             reason: allTransactionsData[2][i].toString(),
             timestamp: DateTime.fromMillisecondsSinceEpoch(
-                int.parse(allTransactionsData[3][i].toString())));
+                allTransactionsData[3][i]..toInt()));
         trans.add(transactionModel);
       }
       transactions = trans;
 
-      balance = balanceData[0];
+      balance = balanceData[0].toInt();
 
       emit(DashboardSuccessState(transactions: transactions, balance: balance));
     } catch (e) {

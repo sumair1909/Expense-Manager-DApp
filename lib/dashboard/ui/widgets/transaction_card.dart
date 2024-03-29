@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 class TransactionCard extends StatelessWidget {
   final String reason;
   final String amount;
-  final String date;
+  final DateTime date;
   const TransactionCard(
       {super.key,
       required this.reason,
@@ -50,7 +50,7 @@ class TransactionCard extends StatelessWidget {
                 )),
               ),
               Text(
-                date,
+                date.toString(),
                 style: GoogleFonts.lato(
                     textStyle: TextStyle(
                   fontSize: 13.sp,
@@ -61,7 +61,7 @@ class TransactionCard extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            amount,
+            "$amount ETH",
             style: GoogleFonts.roboto(
                 textStyle: TextStyle(
               fontSize: 14.sp,

@@ -5,6 +5,7 @@ import 'package:expense_manager/dashboard/ui/widgets/outlined_button.dart';
 import 'package:expense_manager/dashboard/ui/widgets/transaction_card.dart';
 import 'package:expense_manager/debit/ui/debit_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -38,55 +39,94 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AccountDetailsCard(balance: "50", userName: "SUMAIR BAIS"),
-            SizedBox(height: 10.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomOutlinedButton(
-                    buttonText: "Debit",
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DebitScreen()))),
-                SizedBox(width: 30.w),
-                CustomOutlinedButton(
-                    buttonText: "Credit",
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const CreditScreen()))),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 20.w, bottom: 10.h, top: 10.h),
-              child: Text(
-                'Transactions',
-                style: GoogleFonts.spaceGrotesk(
-                  textStyle: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 20.h),
-                itemCount: 15,
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => SizedBox(height: 10.h),
-                itemBuilder: (context, index) => const TransactionCard(
-                  reason: "Salary",
-                  amount: "50 ETH",
-                  date: "12/12/2021",
-                ),
-              ),
-            )
-          ],
-        ));
+        body: BlocConsumer<DashboardBloc, DashboardState>(
+            bloc: _dashboardBloc,
+            listener: (context, state) {},
+            builder: (context, state) {
+              switch (state.runtimeType) {
+                case DashboardLoadingState:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                case DashboardErrorState:
+                  return const Center(
+                    child: Text("Error"),
+                  );
+                case DashboardSuccessState:
+                  final data = state as DashboardSuccessState;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AccountDetailsCard(
+                          balance: data.balance.toString(),
+                          userName: "SUMAIR BAIS"),
+                      SizedBox(height: 10.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomOutlinedButton(
+                              buttonText: "Debit",
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DebitScreen()))),
+                          SizedBox(width: 30.w),
+                          CustomOutlinedButton(
+                              buttonText: "Credit",
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreditScreen()))),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            left: 20.w, bottom: 10.h, top: 10.h),
+                        child: Text(
+                          'Transactions',
+                          style: GoogleFonts.spaceGrotesk(
+                            textStyle: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      data.transactions.isNotEmpty
+                          ? Expanded(
+                              child: ListView.separated(
+                                  padding: EdgeInsets.only(
+                                      left: 20.w, right: 20.w, bottom: 20.h),
+                                  itemCount: data.transactions.length,
+                                  shrinkWrap: true,
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(height: 10.h),
+                                  itemBuilder: (context, index) =>
+                                      TransactionCard(
+                                        reason: data.transactions[index].reason,
+                                        amount: data.transactions[index].amount,
+                                        date:
+                                            data.transactions[index].timestamp,
+                                      )))
+                          : Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(top: 120.h),
+                              child: Text("No transactions :( ",
+                                  style: GoogleFonts.lato(
+                                    textStyle: TextStyle(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black),
+                                  )),
+                            )
+                    ],
+                  );
+                default:
+                  return const SizedBox();
+              }
+            }));
   }
 }
