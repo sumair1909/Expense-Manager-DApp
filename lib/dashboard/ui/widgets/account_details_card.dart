@@ -54,7 +54,7 @@ class AccountDetailsCard extends StatelessWidget {
                     style: GoogleFonts.roboto(
                       textStyle: TextStyle(
                         fontSize: 23.sp,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     )),
