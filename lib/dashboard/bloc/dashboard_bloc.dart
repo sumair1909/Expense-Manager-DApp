@@ -16,12 +16,15 @@ part 'dashboard_states.dart';
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   DashboardBloc() : super(DashboardInitial()) {
     on<DashboardInitialFetchEvent>(dashboardInitialFetchEvent);
+    on<DashboardDepositEvent>(dashboardDepositEvent);
+    on<DashboardWithdrawEvent>(dashboardWithdrawEvent);
   }
   List<TransactionModel> transactions = [];
   Web3Client? _web3client;
   late ContractAbi _abiCode;
   late EthereumAddress _contractAddress;
   late EthPrivateKey _credentials;
+  int balance = 0;
   //getting the contract functions
   late DeployedContract _deployedContract;
   late ContractFunction _deposit;
@@ -47,8 +50,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       _abiCode = ContractAbi.fromJson(
           jsonEncode(abiDecoded['abi']), 'ExpenseManagerContract');
       //getting the contract address
-      _contractAddress =
-          EthereumAddress.fromHex("0x4750B0b6284f27077FF3e0AaEF47c6faF5940D7D");
+      _contractAddress = EthereumAddress.fromHex(contractAddress);
 
       //getting the credentials
       _credentials = EthPrivateKey.fromHex(privateKey);
@@ -62,9 +64,63 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           contract: _deployedContract,
           function: _getAllTransaction,
           params: []);
-      log(allTransactionsData.toString());
+      log("The transactions data is:${allTransactionsData.toString()}");
+      final balanceData = await _web3client!.call(
+          contract: _deployedContract,
+          function: _getBalance,
+          params: [EthereumAddress.fromHex(address)]);
+      log("The balance data is:${balance.toString()}");
+      List<TransactionModel> trans = [];
+      for (int i = 0; i < allTransactionsData[0].length; i++) {
+        TransactionModel transactionModel = TransactionModel(
+            address: allTransactionsData[0][i].toString(),
+            amount: allTransactionsData[1][i].toString(),
+            reason: allTransactionsData[2][i].toString(),
+            timestamp: DateTime.fromMillisecondsSinceEpoch(
+                int.parse(allTransactionsData[3][i].toString())));
+        trans.add(transactionModel);
+      }
+      transactions = trans;
+
+      balance = balanceData[0];
+
+      emit(DashboardSuccessState(transactions: transactions, balance: balance));
     } catch (e) {
       log(e.toString());
+      emit(DashboardErrorState());
+    }
+  }
+
+  FutureOr<void> dashboardDepositEvent(
+      DashboardDepositEvent event, Emitter<DashboardState> emit) async {
+    try {
+      final depositEventData = await _web3client!.call(
+          contract: _deployedContract,
+          function: _deposit,
+          params: [
+            event.transactionModel.amount,
+            event.transactionModel.reason
+          ]);
+      log("Deposit Data: ${depositEventData.toString()}");
+    } on Exception catch (e) {
+      log("Some error ocurred while deposit: ${e.toString()}");
+      emit(DashboardErrorState());
+    }
+  }
+
+  FutureOr<void> dashboardWithdrawEvent(
+      DashboardWithdrawEvent event, Emitter<DashboardState> emit) async {
+    try {
+      final withdrawEventData = await _web3client!.call(
+          contract: _deployedContract,
+          function: _withdraw,
+          params: [
+            event.transactionModel.amount,
+            event.transactionModel.reason
+          ]);
+      log("Withdraw Data: ${withdrawEventData.toString()}");
+    } on Exception catch (e) {
+      log("Some error ocurred while withdraw: ${e.toString()}");
     }
   }
 }
