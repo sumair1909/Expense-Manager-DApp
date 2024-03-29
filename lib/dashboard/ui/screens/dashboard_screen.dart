@@ -70,16 +70,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const DebitScreen()))),
+                                      builder: (context) => DebitScreen(
+                                            dashboardBloc: _dashboardBloc,
+                                          )))),
                           SizedBox(width: 30.w),
                           CustomOutlinedButton(
                               buttonText: "Credit",
                               onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CreditScreen()))),
+                                      builder: (context) => CreditScreen(
+                                          dashboardBloc: _dashboardBloc)))),
                         ],
                       ),
                       Padding(
@@ -107,7 +108,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   itemBuilder: (context, index) =>
                                       TransactionCard(
                                         reason: data.transactions[index].reason,
-                                        amount: data.transactions[index].amount,
+                                        amount: data.transactions[index].amount
+                                            .toString(),
                                         date:
                                             data.transactions[index].timestamp,
                                       )))

@@ -1,6 +1,6 @@
 class TransactionModel {
   final String address;
-  final String amount;
+  final int amount;
   final String reason;
   final DateTime timestamp;
 

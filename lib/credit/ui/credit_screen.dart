@@ -1,16 +1,20 @@
+import 'package:expense_manager/dashboard/bloc/dashboard_bloc.dart';
 import 'package:expense_manager/dashboard/ui/widgets/outlined_button.dart';
+import 'package:expense_manager/models/transaction_model.dart';
+import 'package:expense_manager/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CreditScreen extends StatefulWidget {
-  const CreditScreen({super.key});
+  final DashboardBloc dashboardBloc;
+  const CreditScreen({super.key, required this.dashboardBloc});
 
   @override
   State<CreditScreen> createState() => _CreditScreenState();
 }
 
-late TextEditingController addressController;
+// late TextEditingController addressController;
 late TextEditingController amountController;
 late TextEditingController reasonController;
 
@@ -18,14 +22,14 @@ class _CreditScreenState extends State<CreditScreen> {
   @override
   void initState() {
     super.initState();
-    addressController = TextEditingController();
+    // addressController = TextEditingController();
     amountController = TextEditingController();
     reasonController = TextEditingController();
   }
 
   @override
   void dispose() {
-    addressController.dispose();
+    // addressController.dispose();
     amountController.dispose();
     reasonController.dispose();
     super.dispose();
@@ -51,10 +55,10 @@ class _CreditScreenState extends State<CreditScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
             child: ListView(
               children: [
-                CustomTextFormField(
-                    hintText: "Enter address", controller: addressController),
+                // CustomTextFormField(
+                //     hintText: "Enter address", controller: addressController),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
                   child: CustomTextFormField(
                       hintText: "Enter amount",
                       controller: amountController,
@@ -70,7 +74,16 @@ class _CreditScreenState extends State<CreditScreen> {
                   children: [
                     Expanded(
                         child: CustomOutlinedButton(
-                            buttonText: "CREDIT", onTap: () {})),
+                            buttonText: "CREDIT",
+                            onTap: () {
+                              widget.dashboardBloc.add(DashboardDepositEvent(
+                                  transactionModel: TransactionModel(
+                                      address: address,
+                                      amount: int.parse(amountController.text),
+                                      reason: reasonController.text,
+                                      timestamp: DateTime.now())));
+                              Navigator.pop(context);
+                            })),
                   ],
                 ),
               ],

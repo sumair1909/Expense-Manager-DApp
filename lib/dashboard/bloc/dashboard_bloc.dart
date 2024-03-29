@@ -74,10 +74,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       for (int i = 0; i < allTransactionsData[0].length; i++) {
         TransactionModel transactionModel = TransactionModel(
             address: allTransactionsData[0][i].toString(),
-            amount: allTransactionsData[1][i].toString(),
+            amount: allTransactionsData[1][i].toInt(),
             reason: allTransactionsData[2][i].toString(),
             timestamp: DateTime.fromMillisecondsSinceEpoch(
-                allTransactionsData[3][i]..toInt()));
+                allTransactionsData[3][i].toInt()));
         trans.add(transactionModel);
       }
       transactions = trans;
@@ -94,14 +94,21 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   FutureOr<void> dashboardDepositEvent(
       DashboardDepositEvent event, Emitter<DashboardState> emit) async {
     try {
-      final depositEventData = await _web3client!.call(
+      final depositTransaction = Transaction.callContract(
           contract: _deployedContract,
           function: _deposit,
-          params: [
-            event.transactionModel.amount,
+          parameters: [
+            BigInt.from(event.transactionModel.amount),
             event.transactionModel.reason
-          ]);
+          ],
+          value: EtherAmount.inWei(BigInt.from(event.transactionModel.amount)));
+      final depositEventData = await _web3client!.sendTransaction(
+          _credentials, depositTransaction,
+          chainId: 1337, fetchChainIdFromNetworkId: false);
+
       log("Deposit Data: ${depositEventData.toString()}");
+      emit(DashboardSuccessState(transactions: transactions, balance: balance));
+      add(DashboardInitialFetchEvent());
     } on Exception catch (e) {
       log("Some error ocurred while deposit: ${e.toString()}");
       emit(DashboardErrorState());
@@ -111,14 +118,20 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   FutureOr<void> dashboardWithdrawEvent(
       DashboardWithdrawEvent event, Emitter<DashboardState> emit) async {
     try {
-      final withdrawEventData = await _web3client!.call(
-          contract: _deployedContract,
-          function: _withdraw,
-          params: [
-            event.transactionModel.amount,
-            event.transactionModel.reason
-          ]);
+      final withdrawTransaction = Transaction.callContract(
+        contract: _deployedContract,
+        function: _withdraw,
+        parameters: [
+          BigInt.from(event.transactionModel.amount),
+          event.transactionModel.reason
+        ],
+      );
+      final withdrawEventData = await _web3client!.sendTransaction(
+          _credentials, withdrawTransaction,
+          chainId: 1337, fetchChainIdFromNetworkId: false);
+
       log("Withdraw Data: ${withdrawEventData.toString()}");
+      add(DashboardInitialFetchEvent());
     } on Exception catch (e) {
       log("Some error ocurred while withdraw: ${e.toString()}");
     }

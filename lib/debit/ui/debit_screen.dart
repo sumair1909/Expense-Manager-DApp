@@ -1,17 +1,21 @@
 import 'package:expense_manager/credit/ui/credit_screen.dart';
+import 'package:expense_manager/dashboard/bloc/dashboard_bloc.dart';
 import 'package:expense_manager/dashboard/ui/widgets/outlined_button.dart';
+import 'package:expense_manager/models/transaction_model.dart';
+import 'package:expense_manager/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DebitScreen extends StatefulWidget {
-  const DebitScreen({super.key});
+  final DashboardBloc dashboardBloc;
+  const DebitScreen({super.key, required this.dashboardBloc});
 
   @override
   State<DebitScreen> createState() => _DebitScreenState();
 }
 
-late TextEditingController addressController;
+// late TextEditingController addressController;
 late TextEditingController amountController;
 late TextEditingController reasonController;
 
@@ -19,14 +23,14 @@ class _DebitScreenState extends State<DebitScreen> {
   @override
   void initState() {
     super.initState();
-    addressController = TextEditingController();
+    // addressController = TextEditingController();
     amountController = TextEditingController();
     reasonController = TextEditingController();
   }
 
   @override
   void dispose() {
-    addressController.dispose();
+    // addressController.dispose();
     amountController.dispose();
     reasonController.dispose();
     super.dispose();
@@ -52,10 +56,10 @@ class _DebitScreenState extends State<DebitScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
             child: ListView(
               children: [
-                CustomTextFormField(
-                    hintText: "Enter address", controller: addressController),
+                // CustomTextFormField(
+                //     hintText: "Enter address", controller: addressController),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
                   child: CustomTextFormField(
                       hintText: "Enter amount",
                       controller: amountController,
@@ -71,7 +75,16 @@ class _DebitScreenState extends State<DebitScreen> {
                   children: [
                     Expanded(
                         child: CustomOutlinedButton(
-                            buttonText: "Debit", onTap: () {})),
+                            buttonText: "Debit",
+                            onTap: () {
+                              widget.dashboardBloc.add(DashboardWithdrawEvent(
+                                  transactionModel: TransactionModel(
+                                      address: address,
+                                      amount: int.parse(amountController.text),
+                                      reason: reasonController.text,
+                                      timestamp: DateTime.now())));
+                              Navigator.pop(context);
+                            })),
                   ],
                 ),
               ],
